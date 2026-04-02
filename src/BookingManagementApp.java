@@ -1,6 +1,5 @@
 import java.util.HashMap;
 import java.util.Map;
-
 class Room {
     private int beds;
     private int sizeSqft;
@@ -57,19 +56,23 @@ class RoomInventory {
         return inventory.get(roomType);
     }
 
-    public void updateAvailability(String roomType, int newCount) {
-        Room room = inventory.get(roomType);
-        if (room != null) {
-            room.setAvailableRooms(newCount);
-        } else {
-            System.out.println("Room type not found in inventory.");
-        }
+    public Map<String, Room> getAllRooms() {
+        return inventory;
     }
+}
+class SearchService {
+    private RoomInventory inventory;
 
-    public void displayInventory() {
-        System.out.println("Hotel Room Inventory Status:");
-        for (Map.Entry<String, Room> entry : inventory.entrySet()) {
-            System.out.println(entry.getKey() + " -> " + entry.getValue());
+    public SearchService(RoomInventory inventory) {
+        this.inventory = inventory;
+    }
+    public void displayAvailableRooms() {
+        System.out.println("Available Room Options:");
+        for (Map.Entry<String, Room> entry : inventory.getAllRooms().entrySet()) {
+            Room room = entry.getValue();
+            if (room.getAvailableRooms() > 0) {
+                System.out.println(entry.getKey() + " -> " + room);
+            }
         }
     }
 }
@@ -79,12 +82,8 @@ public class BookingManagementApp {
         RoomInventory inventory = new RoomInventory();
         inventory.addRoomType("Single Room", new Room(1, 250, 1500.0, 5));
         inventory.addRoomType("Double Room", new Room(2, 400, 2500.0, 3));
-        inventory.addRoomType("Suite Room", new Room(3, 750, 5000.0, 2));
-        inventory.displayInventory();
-        System.out.println("\nDetails of Double Room:");
-        System.out.println(inventory.getRoomDetails("Double Room"));
-        inventory.updateAvailability("Double Room", 2);
-        System.out.println("\nAfter update:");
-        inventory.displayInventory();
+        inventory.addRoomType("Suite Room", new Room(3, 750, 5000.0, 0)); // No availability
+        SearchService searchService = new SearchService(inventory);
+        searchService.displayAvailableRooms();
     }
 }
